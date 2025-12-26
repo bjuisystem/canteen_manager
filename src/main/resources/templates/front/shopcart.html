@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>购物车</title>
+    <link rel="stylesheet" href="/frontStatic/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/frontStatic/css/shopcart.css">
+    <link rel="stylesheet" href="/frontStatic/css/sweetalert.css">
+</head>
+<body>
+<div class="container">
+    <div class="top-bar" style="margin: 15px 0;">
+        <ul class="nav nav-pills">
+            <li><a href="/front/toMain">本周菜单</a></li>
+            <li class="active"><a href="/front/toShopCart">购物车</a></li>
+            <li><a href="/front/toOrder">我的订单</a></li>
+            <li><a href="/front/toMonOrder">月度统计</a></li>
+            <li><a href="/front/toInfo">个人信息</a></li>
+            <li class="pull-right"><a href="/front/logout">退出</a></li>
+        </ul>
+    </div>
+
+    <table class="table table-bordered" id="cart-table">
+        <thead>
+        <tr>
+            <th>图片</th>
+            <th>菜名</th>
+            <th>单价</th>
+            <th>分量</th>
+            <th>小计</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <div class="well">
+        总分量：<span id="total-num">0</span>
+        &nbsp;&nbsp;
+        总金额：￥<span id="total-price">0</span>
+        <a class="btn btn-primary pull-right" href="/front/toOrderConfirm">去结算</a>
+    </div>
+</div>
+
+<script src="/frontStatic/js/jquery-1.11.2.min.js"></script>
+<script src="/frontStatic/js/sweetalert.min.js"></script>
+<script src="/frontStatic/js/front/shopcart.js"></script>
+</body>
+</html>

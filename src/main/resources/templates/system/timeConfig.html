@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>时间配置</title>
+    <link rel="stylesheet" href="/component/layui/css/layui.css">
+    <style>
+        .time-input { max-width: 200px; }
+    </style>
+</head>
+<body class="layui-padding-16">
+
+
+<div style="margin-bottom: 10px;">
+    <a class="layui-btn layui-btn-primary" href="javascript:history.back()">返回</a>
+</div>
+<form class="layui-form" lay-filter="timeForm">
+    <input type="hidden" name="id" id="configId">
+    <div class="layui-form-item">
+        <label class="layui-form-label">订餐截止</label>
+        <div class="layui-input-block">
+            <input type="text" name="orderDeadline" required lay-verify="required" class="layui-input time-input" placeholder="HH:mm:ss">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">配餐开始</label>
+        <div class="layui-input-block">
+            <input type="text" name="mealStartTime" required lay-verify="required" class="layui-input time-input" placeholder="HH:mm:ss">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="saveConfig">保存</button>
+        </div>
+    </div>
+</form>
+
+<script src="/component/layui/layui.js"></script>
+<script>
+    layui.use(['form', 'layer', 'laydate'], function () {
+        var form = layui.form;
+        var layer = layui.layer;
+        var laydate = layui.laydate;
+
+        laydate.render({
+            elem: 'input[name="orderDeadline"]',
+            type: 'time',
+            format: 'HH:mm:ss'
+        });
+        laydate.render({
+            elem: 'input[name="mealStartTime"]',
+            type: 'time',
+            format: 'HH:mm:ss'
+        });
+
+        layui.$.get('/timeConfig/current', function (res) {
+            if (res.code === 200 && res.data) {
+                layui.$('#configId').val(res.data.id || '');
+                form.val('timeForm', {
+                    orderDeadline: res.data.orderDeadline,
+                    mealStartTime: res.data.mealStartTime
+                });
+            }
+        });
+
+        form.on('submit(saveConfig)', function (data) {
+            function normalizeTime(value) {
+                if (value && value.length === 5) {
+                    return value + ":00";
+                }
+                return value;
+            }
+            data.field.orderDeadline = normalizeTime(data.field.orderDeadline);
+            data.field.mealStartTime = normalizeTime(data.field.mealStartTime);
+            layui.$.ajax({
+                url: '/timeConfig/update',
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify(data.field),
+                success: function (res) {
+                    if (res.code === 200) {
+                        layer.msg('更新成功');
+                    } else {
+                        layer.msg(res.msg || '更新失败');
+                    }
+                }
+            });
+            return false;
+        });
+    });
+</script>
+<script>
+    (function () {
+        var btn = document.getElementById('logoutBtn');
+        if (!btn) { return; }
+        btn.addEventListener('click', function () {
+            fetch('/login/logout', {method: 'POST'}).finally(function () {
+                window.location.href = '/login';
+            });
+        });
+    })();
+</script>
+</body>
+</html>

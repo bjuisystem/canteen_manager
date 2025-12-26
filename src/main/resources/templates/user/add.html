@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>新增用户</title>
+    <link rel="stylesheet" href="/component/layui/css/layui.css">
+</head>
+<body class="layui-padding-16">
+
+
+<div style="margin-bottom: 10px;">
+    <a class="layui-btn layui-btn-primary" href="javascript:history.back()">返回</a>
+</div>
+<form class="layui-form" lay-filter="userForm">
+    <div class="layui-form-item">
+        <label class="layui-form-label">姓名</label>
+        <div class="layui-input-block">
+            <input type="text" name="name" required lay-verify="required" placeholder="请输入姓名" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">登录名</label>
+        <div class="layui-input-block">
+            <input type="text" name="username" required lay-verify="required" placeholder="请输入登录名" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">性别</label>
+        <div class="layui-input-block">
+            <select name="sex">
+                <option value="M">男</option>
+                <option value="F">女</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">电话</label>
+        <div class="layui-input-block">
+            <input type="text" name="telephone" required lay-verify="required" placeholder="请输入电话" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">部门</label>
+        <div class="layui-input-block">
+            <input type="text" name="department" required lay-verify="required" placeholder="请输入部门" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">工位</label>
+        <div class="layui-input-block">
+            <input type="text" name="workStation" required lay-verify="required" placeholder="如：A3-502" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">角色</label>
+        <div class="layui-input-block">
+            <select name="role">
+                <option value="manager">餐厅经理</option>
+                <option value="chef">厨房主管</option>
+                <option value="caterer">配餐员</option>
+                <option value="treasurer">财务管理</option>
+                <option value="staff">企业员工</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="saveUser">保存</button>
+        </div>
+    </div>
+</form>
+
+<script src="/component/layui/layui.js"></script>
+<script>
+    layui.use(['form', 'layer'], function () {
+        var form = layui.form;
+        var layer = layui.layer;
+        form.on('submit(saveUser)', function (data) {
+            layui.$.ajax({
+                url: '/user/add',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data.field),
+                success: function (res) {
+                    if (res.code === 200) {
+                        layer.msg('新增成功', {time: 1200}, function () {
+                            window.location.href = '/back/toUser';
+                        });
+                    } else {
+                        layer.msg(res.msg || '新增失败');
+                    }
+                }
+            });
+            return false;
+        });
+    });
+</script>
+<script>
+    (function () {
+        var btn = document.getElementById('logoutBtn');
+        if (!btn) { return; }
+        btn.addEventListener('click', function () {
+            fetch('/login/logout', {method: 'POST'}).finally(function () {
+                window.location.href = '/login';
+            });
+        });
+    })();
+</script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>月度销售详情</title>
+    <link rel="stylesheet" href="/component/layui/css/layui.css">
+</head>
+<body class="layui-padding-16">
+
+
+<table id="saleDetailTable" lay-filter="saleDetailTable"></table>
+
+<script src="/component/layui/layui.js"></script>
+<script>
+    layui.use(['table'], function () {
+        var table = layui.table;
+        table.render({
+            elem: '#saleDetailTable',
+            url: '/sale/details',
+            method: 'get',
+            page: true,
+            parseData: function (res) {
+                return {
+                    code: 0,
+                    msg: res.msg,
+                    count: res.data.total,
+                    data: res.data.records
+                };
+            },
+            cols: [
+                [
+                {field: 'name', title: '菜名'},
+                {field: 'unit', title: '单位'},
+                {field: 'weight', title: '总分量'},
+                {field: 'totalPrice', title: '总金额'}
+            ]
+            ]
+        });
+    });
+</script>
+<script>
+    (function () {
+        var btn = document.getElementById('logoutBtn');
+        if (!btn) { return; }
+        btn.addEventListener('click', function () {
+            fetch('/login/logout', {method: 'POST'}).finally(function () {
+                window.location.href = '/login';
+            });
+        });
+    })();
+</script>
+</body>
+</html>

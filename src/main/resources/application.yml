@@ -1,0 +1,34 @@
+# 服务端口号
+server:
+  port: 8888
+
+# 服务名
+spring:
+  application:
+    name: canteen
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+  datasource:
+    url: jdbc:mysql://localhost:3306/canteen_management?allowPublicKeyRetrieval=true&characterEncoding=UTF-8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 123456
+  thymeleaf:
+    cache: false  #开发阶段设置为 false ，上线后设置为 true
+    prefix: classpath:/templates/   # 设置模版文件的路径，前缀
+    suffix: .html # 设置后缀
+    mode: HTML  # 设置模版的类型
+
+mybatis-plus:
+  configuration:
+    #关闭驼峰映射
+    map-underscore-to-camel-case: false
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: ASSIGN_ID
+
+canteen:
+  picture-path: ${user.dir}/picture/

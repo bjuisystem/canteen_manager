@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>历史订单</title>
+    <link rel="stylesheet" href="/component/layui/css/layui.css">
+</head>
+<body class="layui-padding-16">
+
+
+<div class="layui-form layui-form-pane" style="margin-bottom: 10px;">
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">姓名</label>
+            <div class="layui-input-inline">
+                <input type="text" id="searchName" placeholder="请输入姓名" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">月份</label>
+            <div class="layui-input-inline">
+                <input type="month" id="month" class="layui-input">
+            </div>
+        </div>
+        <button class="layui-btn" id="searchBtn">查询</button>
+        <button class="layui-btn layui-btn-normal" id="printBtn">打印订单</button>
+    </div>
+</div>
+
+<table id="orderTable" lay-filter="orderTable"></table>
+
+<script type="text/html" id="orderBar">
+    <a class="layui-btn layui-btn-xs" lay-event="detail">详情</a>
+</script>
+
+<script src="/component/layui/layui.js"></script>
+<script>
+    layui.use(['table', 'layer'], function () {
+        var table = layui.table;
+        var layer = layui.layer;
+
+        table.render({
+            elem: '#orderTable',
+            url: '/order/page',
+            method: 'get',
+            page: true,
+            parseData: function (res) {
+                return {
+                    code: 0,
+                    msg: res.msg,
+                    count: res.data.total,
+                    data: res.data.records
+                };
+            },
+            cols: [
+                [
+                {type: 'checkbox'},
+                {field: 'orderId', title: '订单号', width: 100},
+                {field: 'name', title: '姓名'},
+                {field: 'telephone', title: '电话'},
+                {field: 'workStation', title: '工位'},
+                {field: 'mealDate', title: '用餐日期'},
+                {field: 'orderPrice', title: '金额'},
+                {title: '操作', toolbar: '#orderBar', width: 80}
+            ]
+            ]
+        });
+
+        table.on('tool(orderTable)', function (obj) {
+            if (obj.event === 'detail') {
+                window.location.href = '/back/toDetails/' + obj.data.orderId;
+            }
+        });
+
+        layui.$('#searchBtn').on('click', function () {
+            var monthVal = layui.$('#month').val();
+            if (monthVal) {
+                monthVal = monthVal + '-01';
+            }
+            table.reload('orderTable', {
+                where: {
+                    name: layui.$('#searchName').val(),
+                    orderTime: monthVal
+                },
+                page: { curr: 1 }
+            });
+        });
+
+        layui.$('#printBtn').on('click', function () {
+            var checkStatus = table.checkStatus('orderTable');
+            if (checkStatus.data.length === 0) {
+                layer.msg('请选择订单');
+                return;
+            }
+            var ids = checkStatus.data.map(function (row) { return row.orderId; }).join(',');
+            window.location.href = '/order/print/' + ids;
+        });
+    });
+</script>
+<script>
+    (function () {
+        var btn = document.getElementById('logoutBtn');
+        if (!btn) { return; }
+        btn.addEventListener('click', function () {
+            fetch('/login/logout', {method: 'POST'}).finally(function () {
+                window.location.href = '/login';
+            });
+        });
+    })();
+</script>
+</body>
+</html>

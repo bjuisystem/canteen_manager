@@ -1,0 +1,751 @@
+/* ======================================
+   全局基础样式：重置+统一橙色系（精简高级版）
+   ====================================== */
+html,
+body,
+.layui-layout {
+	height: 100%;
+}
+
+/* 全局变量：精简版橙色系，更细腻的色彩层次（核心优化：降低饱和度，提升高级感） */
+:root {
+	/* 主色系：降低饱和度，更柔和的橙色系 */
+	--orange-deep: #E88327;        /* 主橙色（核心色，略调整饱和度） */
+	--orange-darker: #D16710;      /* 橙红色（选中态渐变，更深沉） */
+	--orange-light: #F5A623;       /* 浅橙色（hover高亮） */
+	/* 背景色：更浅的暖橙，减少视觉压迫 */
+	--orange-bg-main: #FFFAF5;     /* 主背景（极浅橙，接近纯白） */
+	--orange-bg-secondary: #FEF2E4;/* 次要背景（浅橙，更柔和） */
+	/* 边框/文字色：灰度更高，更协调 */
+	--orange-border: #F7D9B8;      /* 边框色（浅橙灰） */
+	--orange-text-primary: #734717;/* 文字主色（深橙灰，降低对比度） */
+	--orange-text-secondary: #996B38;/* 文字次色（橙灰） */
+	--orange-text-light: #B38A58;  /* 文字浅色（浅橙灰） */
+	/* 通用变量：精简，保留核心圆角/阴影/过渡 */
+	--radius-xs: 4px;
+	--radius-sm: 6px;
+	--radius-md: 8px;
+	--radius-lg: 12px;
+	--shadow-sm: 0 2px 6px rgba(232, 131, 39, 0.08); /* 更淡的阴影 */
+	--shadow-md: 0 4px 10px rgba(232, 131, 39, 0.12);
+	--transition-base: all 0.25s ease-in-out; /* 更快的过渡，更丝滑 */
+}
+
+/* 全局重置：精简，只保留核心盒模型与背景重置 */
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+/* 移除全局强制透明背景，改为按需设置（避免覆盖正常背景，精简逻辑） */
+body {
+	background-color: #FFFFFF !important;
+	color: var(--orange-text-primary);
+	font-family: "PingFang SC", "Microsoft YaHei", sans-serif; /* 精简字体，更适配中文 */
+}
+
+/* 全局过渡：只保留核心元素，精简选择器 */
+.pear-admin .layui-header,
+.pear-admin .layui-body,
+.pear-admin .layui-logo,
+.pear-admin .layui-side {
+	transition: var(--transition-base);
+}
+
+/* ======================================
+   横幅布局适配：精简，只保留核心适配逻辑
+   ====================================== */
+.pear-admin.banner-layout .layui-side {
+	top: 60px !important;
+	background-color: var(--orange-bg-main) !important;
+}
+.pear-admin.banner-layout .layui-side .layui-logo {
+	display: none;
+}
+.pear-admin.banner-layout .layui-header .layui-logo {
+	display: inline-block;
+}
+.pear-admin.banner-layout .layui-side .layui-side-scroll {
+	height: 100% !important;
+	background-color: var(--orange-bg-secondary) !important;
+}
+.pear-admin.banner-layout .layui-header {
+	z-index: 99999;
+	width: 100%;
+	left: 0;
+	background-color: var(--orange-bg-main) !important;
+	box-shadow: var(--shadow-sm);
+}
+.pear-admin.banner-layout .layui-header .layui-layout-left {
+	left: 256px; /* 侧边栏宽度改为256px（更标准的尺寸，替代268px） */
+}
+.pear-admin.banner-layout .layui-header .layui-layout-control {
+	display: inline-block;
+	left: 396px; /* 同步偏移 */
+}
+.pear-admin.banner-layout .layui-header.dark-theme {
+	box-shadow: 0 2px 8px rgba(232, 131, 39, 0.15);
+}
+.pear-admin .layui-header.dark-theme .layui-layout-control .layui-this * {
+	background-color: rgba(255, 250, 245, 0.2) !important;
+}
+
+/* ======================================
+   顶部导航栏：精简样式，突出与侧边栏的视觉统一
+   ====================================== */
+.pear-admin .layui-header .layui-logo {
+	display: none;
+}
+.pear-admin .layui-logo .title {
+	font-size: 18px; /* 精简字号，更精致 */
+	font-weight: 600;
+	color: var(--orange-deep);
+}
+/* 顶部下拉菜单：精简阴影与内边距，更轻盈 */
+.pear-admin .layui-layout-right .layui-nav-child {
+	border: 1px solid var(--orange-border) !important;
+	border-radius: var(--radius-md) !important;
+	width: auto;
+	left: auto;
+	right: -5px; /* 精简偏移，更紧凑 */
+	box-shadow: var(--shadow-sm) !important;
+	background-color: #FFFFFF !important;
+	padding: 6px 0; /* 精简内边距 */
+}
+/* 顶部导航栏主体：尺寸改为256px，更标准 */
+.pear-admin .layui-header {
+	left: 256px;
+	width: calc(100% - 256px);
+	background-color: var(--orange-bg-main) !important;
+	border-bottom: 1px solid var(--orange-border) !important;
+	box-shadow: var(--shadow-sm);
+	height: 60px;
+}
+/* 导航控制区域：精简偏移 */
+.pear-admin .layui-layout-control {
+	left: 168px;
+	position: absolute;
+}
+.pear-admin .layui-layout-control .layui-nav {
+	padding: 0;
+}
+/* 顶部导航菜单项：精简间距与字号 */
+.pear-admin .layui-header .layui-nav .layui-nav-item > a {
+	color: var(--orange-text-primary) !important;
+	font-size: 14px;
+	font-weight: 500;
+	padding: 0 16px !important; /* 精简间距 */
+	height: 60px;
+	line-height: 60px;
+}
+/* 顶部导航高亮条：精简高度，更细腻 */
+.pear-admin .layui-header .layui-nav .layui-nav-bar {
+	top: auto !important;
+	bottom: 0 !important;
+	height: 2px !important; /* 精简高度，更精致 */
+	background-color: var(--orange-deep) !important;
+	border-radius: var(--radius-xs) 0 0 var(--radius-xs);
+}
+/* 隐藏默认元素：保留核心 */
+.pear-admin .layui-header .layui-nav .layui-this:after,
+.pear-admin .layui-header .layui-nav-more {
+	display: none !important;
+}
+/* 顶部导航hover：精简背景透明度，更柔和 */
+.pear-admin .layui-header .layui-nav .layui-nav-item > a:hover {
+	color: var(--orange-deep) !important;
+	background-color: rgba(232, 131, 39, 0.04) !important;
+}
+/* 顶部下拉菜单项：精简内边距与间距 */
+.pear-admin .layui-layout-right .layui-nav-child a {
+	color: var(--orange-text-primary) !important;
+	padding: 8px 16px !important; /* 精简内边距 */
+	border-radius: var(--radius-xs);
+	margin: 0 2px;
+}
+.pear-admin .layui-layout-right .layui-nav-child a:hover {
+	color: var(--orange-deep) !important;
+	background-color: rgba(232, 131, 39, 0.08) !important;
+}
+
+/* ====================================== */
+/* 侧边栏核心样式：高级精简版（核心优化区域） */
+/* ====================================== */
+/* 1. Logo区域：尺寸改为256px，精简样式，更轻盈 */
+.pear-admin .layui-logo {
+	width: 256px; /* 改为256px（UI设计常用标准宽度，替代268px） */
+	height: 56px; /* 精简高度，更协调 */
+	line-height: 56px;
+	position: relative;
+	background-color: var(--orange-bg-main) !important;
+	border-bottom: 1px solid var(--orange-border) !important;
+}
+/* 适配侧边栏内Logo：精简高度为100px，更紧凑 */
+.pear-admin .layui-side .layui-logo {
+	height: 100px;
+	line-height: 100px;
+	text-align: center;
+	padding: 0;
+	background-color: var(--orange-bg-main) !important;
+}
+.pear-admin .layui-logo img {
+	width: 32px; /* 精简尺寸 */
+	height: 32px;
+}
+/* 侧边栏内Logo：精简尺寸与阴影，更精致 */
+.pear-admin .layui-side .layui-logo img.logo {
+	width: 70px; /* 精简尺寸 */
+	height: 70px;
+	border-radius: var(--radius-md);
+	vertical-align: middle;
+	box-shadow: var(--shadow-sm); /* 精简阴影，更柔和 */
+}
+.pear-admin .layui-logo .title {
+	font-size: 19px; /* 精简字号 */
+	font-weight: 600;
+	color: var(--orange-deep) !important;
+	position: relative;
+	top: 2px; /* 精简偏移 */
+	margin-left: 4px;
+}
+/* Logo隐藏逻辑：保留核心 */
+.pear-admin .layui-logo .title[style*="display: none"] {
+	display: none !important;
+}
+.pear-admin .layui-logo .logo {
+	display: none;
+}
+.pear-admin .layui-side .layui-logo .logo {
+	display: inline-block;
+}
+
+/* 2. 侧边栏主体：尺寸256px，精简阴影与边框，更轻盈 */
+.pear-admin .layui-side {
+	top: 0;
+	width: 256px; /* 标准256px宽度 */
+	box-shadow: var(--shadow-sm);
+	z-index: 9999;
+	background-color: var(--orange-bg-main) !important;
+	border-right: 1px solid var(--orange-border) !important;
+}
+/* 强制覆盖layui默认黑色背景：保留核心 */
+.pear-admin .layui-side.layui-bg-black {
+	background-color: var(--orange-bg-main) !important;
+}
+
+/* 3. 侧边栏滚动区域：精简尺寸与间距，更透气 */
+.pear-admin .layui-side-scroll {
+	height: calc(100% - 56px) !important;
+	background-color: var(--orange-bg-main) !important;
+	width: 272px; /* 同步加宽（256+16），更精简 */
+	padding: 0;
+}
+/* 适配Logo高度的滚动区域：精简间距与圆角，更高级 */
+.pear-admin .layui-side .layui-side-scroll {
+	height: calc(100% - 100px) !important;
+	padding: 8px 0; /* 精简内边距 */
+	background-color: var(--orange-bg-secondary) !important;
+	border-radius: var(--radius-md); /* 精简圆角，更协调 */
+	margin: 0 6px; /* 精简间距 */
+	width: calc(100% - 12px); /* 相对宽度，更适配 */
+}
+
+/* 4. 滚动条美化：精简色彩，更细腻 */
+.pear-admin .layui-side-scroll::-webkit-scrollbar {
+	width: 4px; /* 精简宽度，更低调 */
+	height: 4px;
+}
+.pear-admin .layui-side-scroll::-webkit-scrollbar-track {
+	background: rgba(232, 131, 39, 0.03) !important; /* 更淡的轨道 */
+	border-radius: var(--radius-xs);
+}
+.pear-admin .layui-side-scroll::-webkit-scrollbar-thumb {
+	background: rgba(232, 131, 39, 0.15) !important; /* 更淡的滑块 */
+	border-radius: var(--radius-xs);
+	transition: var(--transition-base);
+}
+.pear-admin .layui-side-scroll::-webkit-scrollbar-thumb:hover {
+	background: rgba(232, 131, 39, 0.25) !important; /* 更柔和的hover */
+}
+
+/* 5. 侧边导航菜单：核心精简优化，更高级简洁 */
+.layui-nav-tree {
+	background-color: transparent !important;
+}
+/* 主菜单项：精简间距与圆角，更紧凑 */
+.layui-nav-tree .layui-nav-item {
+	margin: 0 6px 4px 6px; /* 精简间距，更紧凑 */
+	border-radius: var(--radius-sm); /* 精简圆角，更现代 */
+}
+/* 主菜单链接：精简尺寸与内边距，更轻盈 */
+.layui-nav-tree .layui-nav-item a {
+	color: var(--orange-text-primary) !important;
+	font-size: 14px;
+	height: 46px; /* 精简高度，更协调 */
+	line-height: 46px;
+	padding: 0 18px; /* 精简内边距 */
+	border-radius: var(--radius-sm);
+	transition: var(--transition-base);
+	background-color: var(--orange-bg-main) !important;
+}
+/* 菜单图标：精简尺寸与间距，更协调 */
+.layui-nav-tree .layui-nav-item a .layui-icon {
+	font-size: 15px; /* 精简字号 */
+	margin-right: 12px; /* 精简间距 */
+	width: 16px;
+	text-align: center;
+	color: var(--orange-text-light) !important;
+}
+/* 菜单hover：精简渐变与偏移，更柔和（核心优化：去掉左移，改为背景渐变+文字变色） */
+.layui-nav-tree .layui-nav-item a:hover {
+	background: linear-gradient(90deg, rgba(232, 131, 39, 0.1), rgba(232, 131, 39, 0.05)) !important;
+	color: var(--orange-deep) !important;
+	/* 移除padding-left: 24px，避免布局抖动，更简洁 */
+}
+.layui-nav-tree .layui-nav-item a:hover .layui-icon {
+	color: var(--orange-deep) !important;
+}
+/* 选中菜单项：精简渐变，更高级（核心优化：渐变更柔和，去掉冗余样式） */
+.layui-nav-tree .layui-this,
+.layui-nav-tree .layui-this > a,
+.layui-nav-tree .layui-this > a:hover {
+	background: linear-gradient(90deg, var(--orange-deep), var(--orange-darker)) !important;
+	color: #FFFFFF !important;
+	border-radius: var(--radius-sm);
+}
+.layui-nav-tree .layui-this > a .layui-icon {
+	color: #FFFFFF !important;
+}
+/* 子菜单容器：精简间距与内边距，更轻盈 */
+.layui-nav-tree .layui-nav-child {
+	background-color: rgba(255, 250, 245, 0.95) !important; /* 更接近纯白，更高级 */
+	border-radius: var(--radius-xs); /* 精简圆角 */
+	margin: 2px 10px; /* 精简间距 */
+	padding: 4px 0; /* 精简内边距 */
+	border: 1px solid var(--orange-border) !important;
+}
+/* 子菜单项：精简尺寸与缩进，更层次化 */
+.layui-nav-tree .layui-nav-child a {
+	height: 40px; /* 精简高度 */
+	line-height: 40px;
+	padding: 0 16px 0 32px; /* 精简缩进 */
+	color: var(--orange-text-secondary) !important;
+	font-size: 13px;
+	background-color: transparent !important;
+}
+/* 子菜单hover：精简偏移，更柔和（移除左移，避免抖动） */
+.layui-nav-tree .layui-nav-child a:hover {
+	color: var(--orange-deep) !important;
+	background-color: rgba(232, 131, 39, 0.08) !important;
+	/* 移除padding-left: 40px */
+}
+/* 子菜单选中项：精简背景透明度，更协调 */
+.layui-nav-tree .layui-nav-child .layui-this a {
+	color: #FFFFFF !important;
+	background-color: rgba(232, 131, 39, 0.25) !important;
+}
+/* 菜单箭头：精简位置与颜色，更低调 */
+.layui-nav-tree .layui-nav-more {
+	right: 18px; /* 精简位置 */
+	color: var(--orange-text-light) !important;
+}
+.layui-nav-tree .layui-nav-itemed .layui-nav-more {
+	color: var(--orange-deep) !important;
+}
+
+/* ====================================== */
+/* 主体内容与页脚：同步尺寸为256px，精简样式 */
+/* ====================================== */
+.pear-admin .layui-body {
+	left: 256px;
+	bottom: 0;
+	padding-bottom: 0;
+	background-color: #FFFFFF !important;
+	padding: 20px;
+}
+.pear-admin .layui-layout-left {
+	left: 0;
+}
+.pear-admin .layui-footer {
+	position: absolute;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	left: 256px;
+	background: #FFFFFF !important;
+	border-top: 1px solid var(--orange-border) !important;
+	box-shadow: 0 -2px 6px rgba(232, 131, 39, 0.05); /* 精简阴影 */
+	transition: left .3s;
+	overflow: hidden;
+	color: var(--orange-text-secondary) !important;
+	font-weight: 400;
+	font-size: 13px;
+	height: 48px; /* 精简高度 */
+	padding: 0 16px; /* 精简内边距 */
+}
+.pear-admin .layui-footer.close {
+	display: none;
+}
+
+/* ====================================== */
+/* 收缩布局：精简尺寸，更协调 */
+/* ====================================== */
+.pear-mini .layui-side .layui-logo .title {
+	display: none;
+}
+.pear-mini .layui-side .layui-logo .logo {
+	display: inline-block;
+}
+.pear-mini .layui-side {
+	width: 56px; /* 精简宽度，更协调 */
+	background-color: var(--orange-bg-main) !important;
+}
+.pear-mini .layui-header {
+	left: 56px;
+	width: calc(100% - 56px);
+	background-color: var(--orange-bg-main) !important;
+}
+.pear-mini .layui-body {
+	left: 56px;
+}
+.pear-mini .layui-side .layui-logo {
+	width: 56px;
+	height: 56px;
+	line-height: 56px;
+	background-color: var(--orange-bg-main) !important;
+}
+.pear-mini .layui-footer {
+	left: 56px;
+}
+.pear-mini .layui-nav-tree .layui-nav-item span {
+	display: none;
+}
+.pear-mini .bottom-nav li {
+	width: 100%;
+}
+.pear-mini .layui-side-scroll {
+	height: calc(100% - 56px);
+	background-color: var(--orange-bg-secondary) !important;
+}
+
+/* ====================================== */
+/* 移动端快捷按钮：精简尺寸与阴影，更精致 */
+/* ====================================== */
+.pear-collapsed-pe {
+	display: none;
+	width: 48px; /* 精简尺寸 */
+	position: absolute;
+	z-index: 400000;
+	bottom: 24px; /* 精简间距 */
+	right: 24px;
+	background: linear-gradient(90deg, var(--orange-deep), var(--orange-darker)) !important;
+	height: 48px;
+	line-height: 48px;
+	text-align: center;
+	border-radius: 50%;
+	box-shadow: var(--shadow-sm); /* 精简阴影 */
+	transition: var(--transition-base);
+}
+.pear-collapsed-pe:hover {
+	transform: scale(1.03); /* 精简缩放，更细腻 */
+	box-shadow: var(--shadow-md);
+}
+.pear-collapsed-pe a {
+	color: white !important;
+	font-size: 16px; /* 精简字号 */
+}
+
+/* ====================================== */
+/* 响应式样式：精简逻辑，更适配 */
+/* ====================================== */
+@media screen and (min-width: 768px) {
+	.layui-hide-sm {
+		display: inline-block !important;
+	}
+}
+@media screen and (min-width: 769px) {
+	.layui-hide-sm {
+		display: none !important;
+	}
+}
+@media screen and (max-width: 768px) {
+	.collapse {
+		display: none !important;
+	}
+	.pear-collapsed-pe {
+		display: inline-block !important;
+	}
+	.layui-layout-control {
+		left: 40px !important; /* 精简偏移 */
+	}
+	.layui-layout-left {
+		padding-left: 8px;
+		padding-right: 8px;
+	}
+	.pear-mini .bottom-nav {
+		display: none;
+	}
+	.pear-mini .layui-side-scroll {
+		height: calc(100% - 56px);
+	}
+	.pear-mini .layui-side {
+		width: 0;
+	}
+	.pear-mini .layui-header,
+	.pear-mini .layui-body,
+	.pear-mini .layui-footer {
+		left: 0;
+		width: 100%;
+	}
+	.pear-mini .layui-logo {
+		width: 0;
+	}
+	.pear-admin .layui-body,
+	.pear-admin .layui-header {
+		left: 0;
+		width: 100%;
+		background-color: var(--orange-bg-main) !important;
+	}
+	.pear-admin .pear-cover {
+		width: 100%;
+		height: 100%;
+		background-color: rgba(255, 250, 245, 0.9) !important;
+		display: block;
+		position: absolute;
+		z-index: 1000;
+		opacity: 0;
+		margin-top: -56px; /* 同步高度 */
+		transition: var(--transition-base);
+	}
+	.pear-mini .pear-cover {
+		display: none;
+	}
+}
+
+/* ====================================== */
+/* 主题适配：精简样式，更统一 */
+/* ====================================== */
+@-webkit-keyframes am-horizontal-roll_show {
+	0% {
+		opacity: 1;
+		-webkit-transform: translateX(800px);
+		transform: translateX(800px);
+	}
+	100% {
+		opacity: 1;
+		-webkit-transform: translateX(0);
+		transform: translateX(0);
+	}
+}
+@keyframes am-horizontal-roll_show {
+	0% {
+		opacity: 1;
+		transform: translateX(800px);
+	}
+	100% {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+.layer-anim-right {
+	-webkit-animation: am-horizontal-roll_show .6s ease-out;
+	animation: am-horizontal-roll_show .6s ease-out;
+}
+
+/* 侧边亮色主题：精简样式，更统一 */
+.light-theme.layui-side {
+	box-shadow: 0 2px 6px 0 rgba(232, 131, 39, 0.06) !important;
+	background-color: var(--orange-bg-main) !important;
+	border-right: 1px solid var(--orange-border) !important;
+}
+.light-theme.layui-side .layui-logo {
+	background-color: var(--orange-bg-main) !important;
+	color: var(--orange-deep) !important;
+	border-bottom: 1px solid var(--orange-border) !important;
+}
+.light-theme.layui-side .layui-side-scroll {
+	background-color: var(--orange-bg-secondary) !important;
+	color: var(--orange-text-primary) !important;
+}
+
+/* 顶部深色主题：精简样式，彻底移除黑灰 */
+.dark-theme.layui-header {
+	border-bottom: 1px solid var(--orange-border) !important;
+	background-color: var(--orange-bg-main) !important;
+	color: var(--orange-text-primary) !important;
+}
+.dark-theme.layui-header li > a {
+	color: var(--orange-text-primary) !important;
+}
+.dark-theme.layui-header .layui-logo {
+	box-shadow: none;
+	border: none;
+	background-color: var(--orange-bg-main) !important;
+}
+
+/* 顶部亮色主题：精简样式 */
+.light-theme.layui-header .layui-logo {
+	background-color: var(--orange-bg-main) !important;
+	border: none;
+	box-shadow: none;
+}
+
+/* ====================================== */
+/* 主题面板与搜索面板：精简样式，更高级 */
+/* ====================================== */
+.pearone-color .set-text {
+	height: 40px; /* 精简高度 */
+	line-height: 40px;
+}
+.pearone-color .color-title,
+.select-color .select-color-title {
+	padding: 12px 0 0 16px; /* 精简内边距 */
+	margin-bottom: 4px;
+	color: var(--orange-text-primary) !important;
+}
+.pearone-color .color-content {
+	padding: 12px 8px 0 16px; /* 精简内边距 */
+}
+.pearone-color .color-content ul {
+	list-style: none;
+	padding: 0;
+}
+.pearone-color .color-content ul li {
+	position: relative;
+	display: inline-block;
+	vertical-align: top;
+	width: 64px; /* 精简尺寸 */
+	height: 46px; /* 精简尺寸 */
+	margin: 0 16px 16px 0; /* 精简间距 */
+	padding: 2px;
+	background-color: var(--orange-bg-secondary) !important;
+	cursor: pointer;
+	font-size: 12px;
+	color: var(--orange-text-primary) !important;
+	border-radius: var(--radius-xs); /* 精简圆角 */
+	transition: var(--transition-base);
+}
+.pearone-color .color-content li.layui-this:after,
+.pearone-color .color-content li:hover:after {
+	width: 100%;
+	height: 100%;
+	padding: 3px; /* 精简内边距 */
+	top: -4px; /* 精简偏移 */
+	left: -4px;
+	border: var(--orange-deep) 2px solid !important;
+	opacity: 1;
+	border-radius: var(--radius-sm); /* 精简圆角 */
+}
+.pearone-color .color-content li:after {
+	content: '';
+	position: absolute;
+	z-index: 20;
+	top: 50%;
+	left: 50%;
+	width: 1px;
+	height: 0;
+	border: 2px solid var(--orange-border) !important;
+	transition: all .3s;
+	opacity: 0;
+}
+
+.select-color {
+	margin-bottom: 24px; /* 精简间距 */
+}
+.select-color .select-color-content {
+	padding: 16px 0 0 0; /* 精简内边距 */
+	margin-bottom: 4px;
+}
+.select-color .select-color-content .select-color-item {
+	background-color: var(--orange-deep) !important;
+	width: 28px; /* 精简尺寸 */
+	height: 28px; /* 精简尺寸 */
+	border-radius: var(--radius-xs); /* 精简圆角 */
+	float: left;
+	margin-left: 16px; /* 精简间距 */
+	color: white !important;
+	font-size: 16px; /* 精简字号 */
+	text-align: center;
+	box-shadow: var(--shadow-sm);
+	line-height: 28px;
+	transition: var(--transition-base);
+}
+.select-color .select-color-content .select-color-item:hover {
+	transform: scale(1.05); /* 精简缩放 */
+	box-shadow: var(--shadow-sm); /* 精简阴影 */
+}
+
+.message .layui-tab-title li:not(:last-child) {
+	border-right: 1px solid var(--orange-border) !important;
+}
+
+/* 搜索面板：精简样式，更轻盈 */
+.menu-search-content .layui-input-prefix {
+	position: absolute;
+	margin-top: 9px; /* 精简偏移 */
+	margin-left: 8px; /* 精简间距 */
+	color: var(--orange-deep) !important;
+}
+.menu-search-content .layui-input {
+	padding-left: 28px; /* 精简内边距 */
+	border: 1px solid var(--orange-border) !important;
+	border-radius: var(--radius-xs); /* 精简圆角 */
+	height: 36px; /* 精简高度 */
+	transition: var(--transition-base);
+	background-color: #FFFFFF !important;
+}
+.menu-search-content .layui-input:focus {
+	border-color: var(--orange-deep) !important;
+	box-shadow: 0 0 0 2px rgba(232, 131, 39, 0.08) !important; /* 精简阴影 */
+	outline: none;
+}
+.menu-search-content {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+.menu-search-input-wrapper {
+	width: 100%;
+	padding: 12px 12px; /* 精简内边距 */
+}
+.menu-search-no-data {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	height: 100px; /* 精简高度 */
+	align-items: center;
+	color: var(--orange-text-light) !important;
+}
+.menu-search-list {
+	width: 100%;
+	padding: 4px 12px; /* 精简内边距 */
+}
+.menu-search-list li {
+	position: relative;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-wrap: nowrap;
+	height: 46px; /* 精简高度 */
+	margin-bottom: 6px; /* 精简间距 */
+	padding: 0 8px; /* 精简内边距 */
+	color: var(--orange-text-primary) !important;
+	font-size: 14px;
+	border-radius: var(--radius-xs); /* 精简圆角 */
+	box-shadow: var(--shadow-sm);
+	cursor: pointer;
+	background-color: #FFFFFF !important;
+	transition: var(--transition-base);
+}
+/* 搜索列表hover：精简缩放与阴影，更柔和 */
+.menu-search-list li:hover {
+	background-color: var(--orange-deep) !important;
+	color: white !important;
+	transform: translateY(-1px); /* 精简缩放 */
+	box-shadow: var(--shadow-sm); /* 精简阴影 */
+}
+.menu-search-list li.this {
+	background-color: var(--orange-deep) !important;
+	color: white !important;
+}

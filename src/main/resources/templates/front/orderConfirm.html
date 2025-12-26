@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>确认订单</title>
+    <link rel="stylesheet" href="/frontStatic/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/frontStatic/css/order.css">
+    <link rel="stylesheet" href="/frontStatic/css/sweetalert.css">
+</head>
+<body>
+<div class="container">
+    <div style="margin: 15px 0;">
+        <a href="/front/toShopCart" class="btn btn-link">返回购物车</a>
+    </div>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>菜名</th>
+            <th>单位</th>
+            <th>分量</th>
+            <th>单价</th>
+            <th>小计</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="sc : ${session.shopCartList}">
+            <td th:text="${sc.name}">菜名</td>
+            <td th:text="${sc.unit}">单位</td>
+            <td th:text="${sc.weight}">1</td>
+            <td>￥<span th:text="${sc.price}">0</span></td>
+            <td>￥<span th:text="${sc.totalPrice}">0</span></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(session.shopCartList)}">
+            <td colspan="5">购物车为空</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="well">
+        总分量：<span th:text="${session.totalWeight}">0</span>
+        &nbsp;&nbsp;
+        总金额：￥<span id="total-new" th:text="${session.totalPrice}">0</span>
+        <button class="btn btn-primary pull-right" id="confirm-orders">提交订单</button>
+    </div>
+</div>
+
+<script src="/frontStatic/js/jquery-1.11.2.min.js"></script>
+<script src="/frontStatic/js/sweetalert.min.js"></script>
+<script src="/frontStatic/js/front/order.js"></script>
+</body>
+</html>

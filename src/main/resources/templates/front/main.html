@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>员工点餐 - 本周菜单</title>
+    <link rel="stylesheet" href="/frontStatic/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/frontStatic/css/main.css">
+    <link rel="stylesheet" href="/frontStatic/css/sweetalert.css">
+    <style>
+        .menu-card { border: 1px solid #eee; border-radius: 6px; padding: 12px; margin-bottom: 18px; }
+        .menu-card img { width: 100%; height: 180px; object-fit: cover; border-radius: 4px; }
+        .menu-title { font-weight: 600; margin: 10px 0 6px; }
+        .menu-meta { color: #777; font-size: 13px; }
+        .top-bar { margin: 15px 0; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="top-bar">
+        <ul class="nav nav-pills">
+            <li class="active"><a href="/front/toMain">本周菜单</a></li>
+            <li><a href="/front/toShopCart">购物车</a></li>
+            <li><a href="/front/toOrder">我的订单</a></li>
+            <li><a href="/front/toMonOrder">月度统计</a></li>
+            <li><a href="/front/toInfo">个人信息</a></li>
+            <li class="pull-right"><a href="/front/logout">退出</a></li>
+        </ul>
+    </div>
+
+    <div id="timeInfo" class="alert alert-info">加载时间配置...</div>
+
+    <div class="row">
+        <div class="col-sm-6 col-md-4" th:each="menu : ${session.menuList}">
+            <div class="menu-card">
+                <img th:src="@{/picture/{file}(file=${menu.picture})}" alt="菜品图片">
+                <div class="menu-title" th:text="${menu.name}">菜品名</div>
+                <div class="menu-meta">
+                    分类：<span th:text="${menu.category}">分类</span>
+                    · 单位：<span th:text="${menu.unit}">单位</span>
+                </div>
+                <div class="menu-meta">价格：￥<span th:text="${menu.price}">0</span></div>
+                <div style="margin-top: 10px;">
+                    <a class="btn btn-primary btn-sm" th:href="@{/front/toDetail/{id}(id=${menu.menuId})}">查看详情</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12" th:if="${#lists.isEmpty(session.menuList)}">
+            <div class="alert alert-warning">当前暂无菜单，请稍后再试。</div>
+        </div>
+    </div>
+</div>
+
+<script src="/frontStatic/js/jquery-1.11.2.min.js"></script>
+<script src="/frontStatic/js/sweetalert.min.js"></script>
+<script>
+    $.get("/timeConfig/current", function (res) {
+        if (res && res.code === 200 && res.data) {
+            $("#timeInfo").text("订餐截止时间：" + res.data.orderDeadline + "，配餐开始时间：" + res.data.mealStartTime);
+        } else {
+            $("#timeInfo").text("时间配置获取失败");
+        }
+    });
+</script>
+</body>
+</html>

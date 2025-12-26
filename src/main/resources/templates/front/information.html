@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>个人信息</title>
+    <link rel="stylesheet" href="/frontStatic/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/frontStatic/css/sweetalert.css">
+</head>
+<body>
+<div class="container">
+    <div class="top-bar" style="margin: 15px 0;">
+        <ul class="nav nav-pills">
+            <li><a href="/front/toMain">本周菜单</a></li>
+            <li><a href="/front/toShopCart">购物车</a></li>
+            <li><a href="/front/toOrder">我的订单</a></li>
+            <li><a href="/front/toMonOrder">月度统计</a></li>
+            <li class="active"><a href="/front/toInfo">个人信息</a></li>
+            <li class="pull-right"><a href="/front/logout">退出</a></li>
+        </ul>
+    </div>
+
+    <table class="table table-bordered">
+        <tbody>
+        <tr>
+            <th>姓名</th>
+            <td th:text="${session.currUser.name}">-</td>
+            <th>登录名</th>
+            <td th:text="${session.currUser.username}">-</td>
+        </tr>
+        <tr>
+            <th>联系电话</th>
+            <td th:text="${session.currUser.telephone}">-</td>
+            <th>部门</th>
+            <td th:text="${session.currUser.department}">-</td>
+        </tr>
+        <tr>
+            <th>工位信息</th>
+            <td th:text="${session.currUser.workStation}">-</td>
+            <th>角色</th>
+            <td th:text="${session.currUser.role}">-</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h4>修改密码</h4>
+    <div class="form-inline">
+        <input type="password" class="form-control" id="newPwd" placeholder="新密码">
+        <input type="password" class="form-control" id="confirmPwd" placeholder="确认新密码">
+        <button class="btn btn-primary" id="savePwdBtn">保存</button>
+    </div>
+</div>
+<script src="/frontStatic/js/jquery-1.11.2.min.js"></script>
+<script src="/frontStatic/js/sweetalert.min.js"></script>
+<script>
+    $("#savePwdBtn").on("click", function () {
+        var newPwd = $("#newPwd").val();
+        var confirmPwd = $("#confirmPwd").val();
+        if (!newPwd) {
+            swal("请输入新密码");
+            return;
+        }
+        if (newPwd !== confirmPwd) {
+            swal("两次密码不一致");
+            return;
+        }
+        $.ajax({
+            type: "POST",
+            url: "/user/updatePwd",
+            data: { password: newPwd },
+            success: function (result) {
+                if (result.code === 200) {
+                    swal("密码更新成功");
+                } else {
+                    swal(result.msg || "更新失败");
+                }
+            },
+            error: function () {
+                swal("更新失败");
+            }
+        });
+    });
+</script>
+</body>
+</html>

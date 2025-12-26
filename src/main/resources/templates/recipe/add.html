@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>新增食谱</title>
+    <link rel="stylesheet" href="/component/layui/css/layui.css">
+</head>
+<body class="layui-padding-16">
+
+
+<div style="margin-bottom: 10px;">
+    <a class="layui-btn layui-btn-primary" href="javascript:history.back()">返回</a>
+</div>
+<form class="layui-form" lay-filter="recipeForm">
+    <div class="layui-form-item">
+        <label class="layui-form-label">菜名</label>
+        <div class="layui-input-block">
+            <input type="text" name="name" required lay-verify="required" placeholder="请输入菜名" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">分类</label>
+        <div class="layui-input-block">
+            <select name="category" required lay-verify="required">
+                <option value="主食">主食</option>
+                <option value="糕点">糕点</option>
+                <option value="菜肴">菜肴</option>
+                <option value="汤羹">汤羹</option>
+                <option value="凉菜">凉菜</option>
+                <option value="热菜">热菜</option>
+                <option value="小吃">小吃</option>
+                <option value="饮品">饮品</option>
+                <option value="素食">素食</option>
+                <option value="特色">特色</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">单位</label>
+        <div class="layui-input-block">
+            <select name="unit" required lay-verify="required">
+                <option value="份">份</option>
+                <option value="两">两</option>
+                <option value="个">个</option>
+                <option value="例">例</option>
+                <option value="杯">杯</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">价格</label>
+        <div class="layui-input-block">
+            <input type="number" name="price" required lay-verify="required" placeholder="请输入价格" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">描述</label>
+        <div class="layui-input-block">
+            <textarea name="description" required lay-verify="required" placeholder="请输入描述" class="layui-textarea"></textarea>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">图片</label>
+        <div class="layui-input-block">
+            <button type="button" class="layui-btn" id="uploadBtn">上传图片</button>
+            <input type="hidden" name="picture" id="picture">
+            <div id="preview" style="margin-top: 10px;"></div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="saveRecipe">保存</button>
+        </div>
+    </div>
+</form>
+
+<script src="/component/layui/layui.js"></script>
+<script>
+    layui.use(['form', 'layer', 'upload'], function () {
+        var form = layui.form;
+        var layer = layui.layer;
+        var upload = layui.upload;
+
+        upload.render({
+            elem: '#uploadBtn',
+            url: '/common/upload',
+            done: function (res) {
+                if (res.code === 200) {
+                    layui.$('#picture').val(res.data);
+                    layui.$('#preview').html('<img src="/picture/' + res.data + '" style="max-width:200px;">');
+                } else {
+                    layer.msg(res.msg || '上传失败');
+                }
+            }
+        });
+
+        form.on('submit(saveRecipe)', function (data) {
+            layui.$.ajax({
+                url: '/recipe/add',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data.field),
+                success: function (res) {
+                    if (res.code === 200) {
+                        layer.msg('新增成功', {time: 1200}, function () {
+                            window.location.href = '/back/toRecipe';
+                        });
+                    } else {
+                        layer.msg(res.msg || '新增失败');
+                    }
+                }
+            });
+            return false;
+        });
+    });
+</script>
+<script>
+    (function () {
+        var btn = document.getElementById('logoutBtn');
+        if (!btn) { return; }
+        btn.addEventListener('click', function () {
+            fetch('/login/logout', {method: 'POST'}).finally(function () {
+                window.location.href = '/login';
+            });
+        });
+    })();
+</script>
+</body>
+</html>

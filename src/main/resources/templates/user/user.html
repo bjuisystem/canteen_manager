@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>用户管理</title>
+    <link rel="stylesheet" href="/component/layui/css/layui.css">
+</head>
+<body class="layui-padding-16">
+
+<div class="layui-form layui-form-pane" style="margin-bottom: 10px;">
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">姓名</label>
+            <div class="layui-input-inline">
+                <input type="text" name="name" id="searchName" placeholder="请输入姓名" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <button class="layui-btn" id="searchBtn">查询</button>
+        <a class="layui-btn layui-btn-normal" href="/back/toUserAdd">新增用户</a>
+        <button class="layui-btn layui-btn-warm" id="importBtn" type="button">批量导入</button>
+    </div>
+</div>
+
+<table id="userTable" lay-filter="userTable"></table>
+
+<script type="text/html" id="userBar">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<script src="/component/layui/layui.js"></script>
+<script>
+    layui.use(['table', 'layer', 'upload'], function () {
+        var table = layui.table;
+        var layer = layui.layer;
+        var upload = layui.upload;        var roleMap = {
+            manager: '餐厅经理',
+            chef: '厨房主管',
+            caterer: '配餐员',
+            treasurer: '财务管理员',
+            staff: '企业员工'
+        };
+table.render({
+            elem: '#userTable',
+            url: '/user/page',
+            method: 'get',
+            page: true,
+            parseData: function (res) {
+                return {
+                    code: 0,
+                    msg: res.msg,
+                    count: res.data.total,
+                    data: res.data.records
+                };
+            },
+            cols: [
+                [
+                    {field: 'username', title: '用户编码'},
+                    {field: 'role', title: '角色', templet: function (d) {
+                        return roleMap[d.role] || d.role || '-';
+                    }},
+                    {title: '操作', toolbar: '#userBar', width: 120}
+                ]
+            ]
+        });
+
+        table.on('tool(userTable)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') {
+                window.location.href = '/back/toUserEdit/' + data.userId;
+            } else if (obj.event === 'del') {
+                layer.confirm('确认删除该用户？', function (index) {
+                    layui.$.ajax({
+                        url: '/user/delete/' + data.userId,
+                        type: 'DELETE',
+                        success: function (res) {
+                            if (res.code === 200) {
+                                obj.del();
+                                layer.msg('删除成功');
+                            } else {
+                                layer.msg(res.msg || '删除失败');
+                            }
+                        }
+                    });
+                    layer.close(index);
+                });
+            }
+        });
+
+        layui.$('#searchBtn').on('click', function () {
+            table.reload('userTable', {
+                where: { name: layui.$('#searchName').val() },
+                page: { curr: 1 }
+            });
+        });
+
+        upload.render({
+            elem: '#importBtn',
+            url: '/user/import',
+            accept: 'file',
+            exts: 'csv',
+            done: function (res) {
+                if (res.code === 200) {
+                    layer.msg(res.data || '导入成功');
+                    table.reload('userTable');
+                } else {
+                    layer.msg(res.msg || '导入失败');
+                }
+            }
+        });
+    });
+</script>
+<script>
+    (function () {
+        var btn = document.getElementById('logoutBtn');
+        if (!btn) { return; }
+        btn.addEventListener('click', function () {
+            fetch('/login/logout', {method: 'POST'}).finally(function () {
+                window.location.href = '/login';
+            });
+        });
+    })();
+</script>
+</body>
+</html>

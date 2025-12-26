@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>月度订单汇总</title>
+    <link rel="stylesheet" href="/frontStatic/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/frontStatic/css/sweetalert.css">
+</head>
+<body>
+<div class="container">
+    <div class="top-bar" style="margin: 15px 0;">
+        <ul class="nav nav-pills">
+            <li><a href="/front/toMain">本周菜单</a></li>
+            <li><a href="/front/toShopCart">购物车</a></li>
+            <li><a href="/front/toOrder">我的订单</a></li>
+            <li class="active"><a href="/front/toMonOrder">月度统计</a></li>
+            <li><a href="/front/toInfo">个人信息</a></li>
+            <li class="pull-right"><a href="/front/logout">退出</a></li>
+        </ul>
+    </div>
+
+    <div class="well">
+        统计月份：<span th:text="${session.monDate}">-</span>
+        <button class="btn btn-primary pull-right" name="finishList">打印月度订单</button>
+    </div>
+
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>时间</th>
+            <th>菜名</th>
+            <th>单位</th>
+            <th>分量</th>
+            <th>小计</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="b : ${session.monBlanketOrderList}">
+            <td th:text="${#dates.format(b.createTime, 'yyyy-MM-dd HH:mm:ss')}">-</td>
+            <td th:text="${b.name}">菜名</td>
+            <td th:text="${b.unit}">单位</td>
+            <td th:text="${b.weight}">0</td>
+            <td>￥<span th:text="${b.totalPrice}">0</span></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(session.monBlanketOrderList)}">
+            <td colspan="5">暂无数据</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="well">
+        合计金额：￥<span th:text="${session.monTotalPrice}">0</span>
+    </div>
+</div>
+
+<script src="/frontStatic/js/jquery-1.11.2.min.js"></script>
+<script src="/frontStatic/js/sweetalert.min.js"></script>
+<script src="/frontStatic/js/front/list.js"></script>
+</body>
+</html>

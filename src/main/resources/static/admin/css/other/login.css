@@ -1,0 +1,137 @@
+/* 外层隔离类：所有样式嵌套，不污染admin页面 */
+.login-page {
+	min-height: 100vh;
+	margin: 0;
+	padding: 0;
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-family: "Microsoft Yahei", sans-serif;
+}
+
+/* 登录容器：居中+卡片效果 */
+.login-container {
+	width: 100%;
+	max-width: 390px;
+	padding: 0 20px;
+}
+
+/* 表单容器：半透明背景+圆角+阴影 */
+.login-page .layui-form {
+	width: 100% !important;
+	margin: 0 auto !important;
+	padding: 40px 30px !important;
+	background-color: rgba(255, 255, 255, 0.92) !important;
+	border-radius: 12px !important;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+	margin-top: 0 !important; /* 覆盖原margin-top:160px，用flex居中替代 */
+}
+
+/* 登录标题 */
+.login-page .login-title {
+	text-align: center;
+	margin-bottom: 30px !important;
+	margin-top: 0 !important;
+}
+.login-page .login-title div {
+	font-size: 24px !important;
+	font-weight: 700 !important;
+	color: #ff6b35 !important; /* 橙色 */
+}
+
+/* 表单项间距 */
+.login-page .layui-form-item {
+	margin-top: 20px !important;
+	margin-bottom: 15px !important;
+}
+
+/* 输入框样式：统一圆角+高度+背景 */
+.login-page .layui-input {
+	height: 46px !important;
+	line-height: 46px !important;
+	padding-left: 18px !important;
+	border-radius: 23px !important; /* 圆形输入框 */
+	border: 1px solid #e5e7eb !important;
+	background-color: #fff !important;
+	font-size: 14px !important;
+	transition: all 0.3s ease !important;
+	box-sizing: border-box !important;
+}
+
+/* 输入框聚焦效果：突出显示 */
+.login-page .layui-input:focus {
+	outline: none !important;
+	border-color: #ff6b35 !important; /* 橙色 */
+	box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.15) !important; /* 橙色 */
+}
+
+/* 错误输入框聚焦效果 */
+.login-page .layui-form-danger:focus {
+	border-color: #f56c6c !important;
+	box-shadow: 0 0 0 3px rgba(245, 108, 108, 0.15) !important;
+}
+
+/* 验证码区域布局 */
+.login-page .login-code-group {
+	display: flex !important;
+	gap: 10px !important;
+	align-items: center !important;
+}
+.login-page .login-code-input {
+	flex: 1 !important;
+	width: auto !important;
+}
+.login-page .login-code-img {
+	width: 110px !important;
+	height: 46px !important;
+	border-radius: 23px !important;
+	border: 1px solid #e5e7eb !important;
+	cursor: pointer !important;
+	object-fit: cover !important;
+}
+
+/* 登录按钮样式 */
+.login-page .layui-form button {
+	width: 100% !important;
+	height: 46px !important;
+	line-height: 46px !important;
+	font-size: 16px !important;
+	background-color: #ff6b35 !important; /* 橙色 */
+	font-weight: 550 !important;
+	border-radius: 23px !important;
+	transition: background-color 0.3s ease !important;
+	border: none !important;
+}
+.login-page .layui-form button:hover {
+	background-color: #e55a2b !important; /* hover加深 */
+}
+.login-page .layui-form button:active {
+	background-color: #cc4d22 !important; /* 点击效果 */
+}
+
+/* 复选框样式（保留原逻辑，嵌套隔离） */
+.login-page .layui-form-checked[lay-skin=primary] i {
+	border-color: #ff6b35 !important; /* 橙色 */
+	background-color: #ff6b35 !important; /* 橙色 */
+	color: #fff !important;
+}
+
+/* 适配移动端：防止溢出 */
+@media (max-width: 768px) {
+	.login-page .layui-form {
+		padding: 30px 20px !important;
+	}
+	.login-page .login-code-img {
+		width: 100px !important;
+	}
+}
+
+/* 兼容原框架样式：避免冲突 */
+.login-page .layui-tab-content {
+	margin-top: 15px !important;
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+}

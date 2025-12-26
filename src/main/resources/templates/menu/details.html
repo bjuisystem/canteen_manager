@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>历史菜单详情</title>
+    <link rel="stylesheet" href="/component/layui/css/layui.css">
+</head>
+<body class="layui-padding-16">
+
+
+<table id="menuTable" lay-filter="menuTable"></table>
+
+<script src="/component/layui/layui.js"></script>
+<script>
+    layui.use(['table'], function () {
+        var table = layui.table;
+        table.render({
+            elem: '#menuTable',
+            url: '/history/details',
+            method: 'get',
+            page: true,
+            parseData: function (res) {
+                return {
+                    code: 0,
+                    msg: res.msg,
+                    count: res.data.total,
+                    data: res.data.records
+                };
+            },
+            cols: [
+                [
+                {field: 'menuId', title: 'ID', width: 80},
+                {field: 'name', title: '菜名'},
+                {field: 'category', title: '分类'},
+                {field: 'unit', title: '单位'},
+                {field: 'price', title: '价格'}
+            ]
+            ]
+        });
+    });
+</script>
+<script>
+    (function () {
+        var btn = document.getElementById('logoutBtn');
+        if (!btn) { return; }
+        btn.addEventListener('click', function () {
+            fetch('/login/logout', {method: 'POST'}).finally(function () {
+                window.location.href = '/login';
+            });
+        });
+    })();
+</script>
+</body>
+</html>

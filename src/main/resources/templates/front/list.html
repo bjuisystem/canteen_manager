@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>我的订单</title>
+    <link rel="stylesheet" href="/frontStatic/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/frontStatic/css/sweetalert.css">
+</head>
+<body>
+<div class="container">
+    <div class="top-bar" style="margin: 15px 0;">
+        <ul class="nav nav-pills">
+            <li><a href="/front/toMain">本周菜单</a></li>
+            <li><a href="/front/toShopCart">购物车</a></li>
+            <li class="active"><a href="/front/toOrder">我的订单</a></li>
+            <li><a href="/front/toMonOrder">月度统计</a></li>
+            <li><a href="/front/toInfo">个人信息</a></li>
+            <li class="pull-right"><a href="/front/logout">退出</a></li>
+        </ul>
+    </div>
+
+    <h4>今日订单</h4>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>订单号</th>
+            <th>下单时间</th>
+            <th>用餐日期</th>
+            <th>金额</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="o : ${session.orderList}">
+            <td th:text="${o.orderId}">0</td>
+            <td th:text="${#dates.format(o.orderTime, 'yyyy-MM-dd HH:mm:ss')}">-</td>
+            <td th:text="${#dates.format(o.mealDate, 'yyyy-MM-dd')}">-</td>
+            <td>￥<span th:text="${o.orderPrice}">0</span></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(session.orderList)}">
+            <td colspan="4">暂无订单</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h4>订单明细</h4>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>菜名</th>
+            <th>单位</th>
+            <th>分量</th>
+            <th>单价</th>
+            <th>小计</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="b : ${session.blanketOrderList}">
+            <td th:text="${b.name}">菜名</td>
+            <td th:text="${b.unit}">单位</td>
+            <td th:text="${b.weight}">0</td>
+            <td>￥<span th:text="${b.price}">0</span></td>
+            <td>￥<span th:text="${b.totalPrice}">0</span></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(session.blanketOrderList)}">
+            <td colspan="5">暂无明细</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script src="/frontStatic/js/jquery-1.11.2.min.js"></script>
+<script src="/frontStatic/js/sweetalert.min.js"></script>
+</body>
+</html>

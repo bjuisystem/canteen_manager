@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>修改密码</title>
+    <link rel="stylesheet" href="/component/layui/css/layui.css">
+</head>
+<body class="layui-padding-16">
+
+
+<form class="layui-form" lay-filter="pwdForm">
+    <div class="layui-form-item">
+        <label class="layui-form-label">新密码</label>
+        <div class="layui-input-block">
+            <input type="password" name="password" required lay-verify="required" placeholder="请输入新密码" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">确认密码</label>
+        <div class="layui-input-block">
+            <input type="password" name="password2" required lay-verify="required" placeholder="请再次输入" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="savePwd">保存</button>
+        </div>
+    </div>
+</form>
+
+<script src="/component/layui/layui.js"></script>
+<script>
+    layui.use(['form', 'layer'], function () {
+        var form = layui.form;
+        var layer = layui.layer;
+        form.on('submit(savePwd)', function (data) {
+            if (data.field.password !== data.field.password2) {
+                layer.msg("两次密码不一致");
+                return false;
+            }
+            layui.$.ajax({
+                type: "POST",
+                url: "/user/updatePwd",
+                data: { password: data.field.password },
+                success: function (res) {
+                    if (res.code === 200) {
+                        layer.msg("更新成功");
+                    } else {
+                        layer.msg(res.msg || "更新失败");
+                    }
+                },
+                error: function () {
+                    layer.msg("更新失败");
+                }
+            });
+            return false;
+        });
+    });
+</script>
+<script>
+    (function () {
+        var btn = document.getElementById('logoutBtn');
+        if (!btn) { return; }
+        btn.addEventListener('click', function () {
+            fetch('/login/logout', {method: 'POST'}).finally(function () {
+                window.location.href = '/login';
+            });
+        });
+    })();
+</script>
+</body>
+</html>

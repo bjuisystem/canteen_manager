@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>历史菜单</title>
+    <link rel="stylesheet" href="/component/layui/css/layui.css">
+</head>
+<body class="layui-padding-16">
+
+
+<table id="historyTable" lay-filter="historyTable"></table>
+
+<script type="text/html" id="historyBar">
+    <a class="layui-btn layui-btn-xs" lay-event="detail">查看详情</a>
+</script>
+
+<script src="/component/layui/layui.js"></script>
+<script>
+    layui.use(['table'], function () {
+        var table = layui.table;
+        table.render({
+            elem: '#historyTable',
+            url: '/history/page',
+            method: 'get',
+            page: true,
+            parseData: function (res) {
+                return {
+                    code: 0,
+                    msg: res.msg,
+                    count: res.data.total,
+                    data: res.data.records
+                };
+            },
+            cols: [
+                [
+                {field: 'hisId', title: 'ID', width: 80},
+                {field: 'timeRange', title: '时间范围'},
+                {field: 'menuIds', title: '菜单ID集合'},
+                {title: '操作', toolbar: '#historyBar', width: 100}
+            ]
+            ]
+        });
+
+        table.on('tool(historyTable)', function (obj) {
+            if (obj.event === 'detail') {
+                window.location.href = '/back/toHistoryDetail/' + obj.data.menuIds;
+            }
+        });
+    });
+</script>
+<script>
+    (function () {
+        var btn = document.getElementById('logoutBtn');
+        if (!btn) { return; }
+        btn.addEventListener('click', function () {
+            fetch('/login/logout', {method: 'POST'}).finally(function () {
+                window.location.href = '/login';
+            });
+        });
+    })();
+</script>
+</body>
+</html>

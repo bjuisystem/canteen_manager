@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>月度销售统计</title>
+    <link rel="stylesheet" href="/component/layui/css/layui.css">
+</head>
+<body class="layui-padding-16">
+
+
+<div class="layui-form layui-form-pane" style="margin-bottom: 10px;">
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">月份</label>
+            <div class="layui-input-inline">
+                <input type="month" id="month" class="layui-input">
+            </div>
+        </div>
+        <button class="layui-btn" id="searchBtn">查询</button>
+        <button class="layui-btn layui-btn-normal" id="printBtn">打印</button>
+    </div>
+    </div>
+
+<table id="saleTable" lay-filter="saleTable"></table>
+
+<script type="text/html" id="saleBar">
+    <a class="layui-btn layui-btn-xs" lay-event="detail">详情</a>
+</script>
+
+<script src="/component/layui/layui.js"></script>
+<script>
+    layui.use(['table', 'layer'], function () {
+        var table = layui.table;
+        var layer = layui.layer;
+
+        table.render({
+            elem: '#saleTable',
+            url: '/sale/page',
+            method: 'get',
+            page: true,
+            parseData: function (res) {
+                return {
+                    code: 0,
+                    msg: res.msg,
+                    count: res.data.total,
+                    data: res.data.records
+                };
+            },
+            cols: [
+                [
+                {type: 'checkbox'},
+                {field: 'saleId', title: 'ID', width: 80},
+                {field: 'month', title: '月份'},
+                {field: 'totalPrice', title: '总金额'},
+                {title: '操作', toolbar: '#saleBar', width: 80}
+            ]
+            ]
+        });
+
+        table.on('tool(saleTable)', function (obj) {
+            if (obj.event === 'detail') {
+                window.location.href = '/back/toSaleDetails/' + obj.data.month;
+            }
+        });
+
+        layui.$('#searchBtn').on('click', function () {
+            var month = layui.$('#month').val();
+            if (month) {
+                month = month.slice(0, 7);
+            }
+            table.reload('saleTable', {
+                where: { month: month },
+                page: { curr: 1 }
+            });
+        });
+
+        layui.$('#printBtn').on('click', function () {
+            var checkStatus = table.checkStatus('saleTable');
+            if (checkStatus.data.length === 0) {
+                layer.msg('请选择统计记录');
+                return;
+            }
+            var ids = checkStatus.data.map(function (row) { return row.saleId; }).join(',');
+            window.location.href = '/sale/print/' + ids;
+        });
+    });
+</script>
+<script>
+    (function () {
+        var btn = document.getElementById('logoutBtn');
+        if (!btn) { return; }
+        btn.addEventListener('click', function () {
+            fetch('/login/logout', {method: 'POST'}).finally(function () {
+                window.location.href = '/login';
+            });
+        });
+    })();
+</script>
+</body>
+</html>
