@@ -28,24 +28,17 @@
 		"children": [
 			{
 				"id": 301,
-				"title": "挑选菜单",
+				"title": "生成菜单",
 				"type": 1,
 				"openType": "_iframe",
 				"href": "/back/toAddMenu"
 			},
 			{
 				"id": 302,
-				"title": "本周菜单",
+				"title": "当前菜单",
 				"type": 1,
 				"openType": "_iframe",
 				"href": "/back/toMenu"
-			},
-			{
-				"id": 303,
-				"title": "退选本周菜单",
-				"type": 1,
-				"openType": "_iframe",
-				"href": "/back/toNextMenu"
 			},
 			{
 				"id": 304,

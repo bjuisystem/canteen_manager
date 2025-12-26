@@ -31,12 +31,6 @@ public class MyScheduleTask {
     private ShopCartService shopCartService;
 
     @Autowired
-    private MenuService menuService;
-
-    @Autowired
-    private HistoryService historyService;
-
-    @Autowired
     private TimeConfigService timeConfigService;
 
     /**
@@ -83,30 +77,4 @@ public class MyScheduleTask {
         log.info("本周已结束，自动清除所有用户购物车");
     }
 
-    /**
-     * 每周周天23:00:00分自动统计该周的所有菜品并归纳为这周历史菜单
-     */
-    @Scheduled(cron = "#{@timeConfigServiceImpl.getHistoryMenuCron()}")
-    public void addHistoryMenu() {
-        History history = new History();
-        // 获取当前时间的一周的开始与结尾
-        Date weekOfBeginTime = MyTimeUtils.getWeekOfBeginTime();
-        Date weekOfEndTime = MyTimeUtils.getWeekOfEndTime();
-        String weekOfBeginTimeStr = DateUtil.formatDate(weekOfBeginTime);
-        String weekOfEndTimeStr = DateUtil.formatDate(weekOfEndTime);
-        // 设置时间范围
-        history.setTimeRange(weekOfBeginTimeStr + "~" + weekOfEndTimeStr);
-        // 设置menuIds 通过字符串拼接这一周的所有菜单编号
-        StringBuilder sb = new StringBuilder();
-        LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.between(Menu::getCreateTime, weekOfBeginTime, weekOfEndTime);
-        List<Menu> menuList = menuService.list(queryWrapper);
-        for (Menu m : menuList) {
-            sb.append(m.getMenuId()).append(",");
-        }
-        history.setMenuIds(sb.substring(0, sb.length() - 1));
-        // 加入数据库
-        boolean res = historyService.save(history);
-        log.info("自动收集历史菜单：{}", res ? "成功" : "失败");
-    }
 }

@@ -2,12 +2,14 @@ package com.javaweb.canteen.controller;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.javaweb.canteen.common.MyTimeUtils;
 import com.javaweb.canteen.entity.*;
 import com.javaweb.canteen.service.BlanketOrderService;
+import com.javaweb.canteen.service.HistoryService;
 import com.javaweb.canteen.service.MenuService;
 import com.javaweb.canteen.service.OrderFormService;
 import com.javaweb.canteen.service.ShopCartService;
@@ -43,6 +45,9 @@ public class FrontController {
     private MenuService menuService;
 
     @Autowired
+    private HistoryService historyService;
+
+    @Autowired
     private ShopCartService shopCartService;
 
     @Autowired
@@ -72,17 +77,20 @@ public class FrontController {
      */
     @GetMapping("/toMain")
     public String toMain(HttpServletRequest request){
-        LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
-
-        // 获取当前时间的一周开始与一周结束
-        Date weekOfBeginTime = MyTimeUtils.getWeekOfBeginTime();
-        Date weekOfEndTime = MyTimeUtils.getWeekOfEndTime();
-
-        queryWrapper.between(Menu::getCreateTime, weekOfBeginTime, weekOfEndTime)
-                .and(w -> w.eq(Menu::getDeleted, 0).or().isNull(Menu::getDeleted))
-                .orderByDesc(Menu::getCreateTime);
-
-        List<Menu> menuList = menuService.list(queryWrapper);
+        History latest = historyService.getOne(new LambdaQueryWrapper<History>()
+                .orderByDesc(History::getHisId)
+                .last("limit 1"));
+        List<Menu> menuList = new ArrayList<>();
+        if (latest != null && StrUtil.isNotEmpty(latest.getMenuIds())) {
+            List<Long> menuIds = parseMenuIds(latest.getMenuIds());
+            if (!menuIds.isEmpty()) {
+                LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
+                queryWrapper.in(Menu::getMenuId, menuIds)
+                        .and(w -> w.eq(Menu::getDeleted, 0).or().isNull(Menu::getDeleted))
+                        .orderByDesc(Menu::getCreateTime);
+                menuList = menuService.list(queryWrapper);
+            }
+        }
         request.getSession().setAttribute("menuList", menuList);
 
         return "front/main";
@@ -167,6 +175,20 @@ public class FrontController {
         } catch (DateTimeParseException ex) {
             return fallback;
         }
+    }
+
+    private List<Long> parseMenuIds(String menuIds) {
+        if (StrUtil.isEmpty(menuIds)) {
+            return new ArrayList<>();
+        }
+        String[] parts = menuIds.split(",");
+        List<Long> ids = new ArrayList<>();
+        for (String part : parts) {
+            if (StrUtil.isNotEmpty(part)) {
+                ids.add(Long.valueOf(part.trim()));
+            }
+        }
+        return ids;
     }
 
     /**

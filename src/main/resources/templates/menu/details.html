@@ -11,6 +11,12 @@
 
 <table id="menuTable" lay-filter="menuTable"></table>
 
+<script type="text/html" id="menuPic">
+    {{# if(d.picture){ }}
+    <img src="/picture/{{d.picture}}" style="width:60px;height:40px;object-fit:cover;">
+    {{# } }}
+</script>
+
 <script src="/component/layui/layui.js"></script>
 <script>
     layui.use(['table'], function () {
@@ -31,6 +37,7 @@
             cols: [
                 [
                 {field: 'menuId', title: 'ID', width: 80},
+                {field: 'picture', title: '图片', templet: '#menuPic', width: 90},
                 {field: 'name', title: '菜名'},
                 {field: 'category', title: '分类'},
                 {field: 'unit', title: '单位'},

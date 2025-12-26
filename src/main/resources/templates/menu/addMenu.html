@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>挑选菜单</title>
+    <title>生成菜单</title>
     <link rel="stylesheet" href="/component/layui/css/layui.css">
 </head>
 <body class="layui-padding-16">
@@ -17,24 +17,12 @@
                 <input type="text" name="name" id="searchName" placeholder="请输入菜名" autocomplete="off" class="layui-input">
             </div>
         </div>
-        <div class="layui-inline">
-            <label class="layui-form-label">周次</label>
-            <div class="layui-input-inline">
-                <select id="weekType" class="layui-select">
-                    <option value="this" selected>本周</option>
-                    <option value="next" >下周</option>
-                </select>
-            </div>
-        </div>
         <button class="layui-btn" id="searchBtn">查询</button>
+        <button class="layui-btn layui-btn-normal" id="generateBtn">生成菜单</button>
     </div>
 </div>
 
 <table id="recipeTable" lay-filter="recipeTable"></table>
-
-<script type="text/html" id="addBar">
-    <a class="layui-btn layui-btn-xs" lay-event="add">加入菜单</a>
-</script>
 
 <script src="/component/layui/layui.js"></script>
 <script>
@@ -57,38 +45,44 @@
             },
             cols: [
                 [
+                {type: 'checkbox'},
                 {field: 'recipeId', title: 'ID', width: 80},
                 {field: 'name', title: '菜名'},
                 {field: 'category', title: '分类'},
                 {field: 'unit', title: '单位'},
-                {field: 'price', title: '价格'},
-                {title: '操作', toolbar: '#addBar', width: 140}
+                {field: 'price', title: '价格'}
             ]
             ]
-        });
-
-        table.on('tool(recipeTable)', function (obj) {
-            var data = obj.data;
-            if (obj.event === 'add') {
-                var week = layui.$('#weekType').val() || 'next';
-                layui.$.ajax({
-                    url: '/menu/add/' + data.recipeId + '?week=' + week,
-                    type: 'POST',
-                    success: function (res) {
-                        if (res.code === 200) {
-                            layer.msg(res.data || '添加成功');
-                        } else {
-                            layer.msg(res.msg || '添加失败');
-                        }
-                    }
-                });
-            }
         });
 
         layui.$('#searchBtn').on('click', function () {
             table.reload('recipeTable', {
                 where: { name: layui.$('#searchName').val() },
                 page: { curr: 1 }
+            });
+        });
+
+        layui.$('#generateBtn').on('click', function () {
+            var checkStatus = table.checkStatus('recipeTable');
+            if (checkStatus.data.length === 0) {
+                layer.msg('请选择要生成菜单的菜品');
+                return;
+            }
+            var ids = checkStatus.data.map(function (row) { return row.recipeId; });
+            layui.$.ajax({
+                url: '/menu/generate',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(ids),
+                success: function (res) {
+                    if (res.code === 200) {
+                        layer.msg(res.data || '生成成功', {time: 1200}, function () {
+                            window.location.href = '/back/toMenu';
+                        });
+                    } else {
+                        layer.msg(res.msg || '生成失败');
+                    }
+                }
             });
         });
     });

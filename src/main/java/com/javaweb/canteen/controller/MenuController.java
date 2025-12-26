@@ -6,11 +6,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.javaweb.canteen.common.MyTimeUtils;
 import com.javaweb.canteen.common.R;
+import com.javaweb.canteen.entity.History;
 import com.javaweb.canteen.entity.Menu;
 import com.javaweb.canteen.entity.Recipe;
 import com.javaweb.canteen.exception.CustomException;
+import com.javaweb.canteen.service.HistoryService;
 import com.javaweb.canteen.service.MenuService;
 import com.javaweb.canteen.service.RecipeService;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -31,6 +35,9 @@ public class MenuController {
 
     @Autowired
     private RecipeService recipeService;
+
+    @Autowired
+    private HistoryService historyService;
 
     /**
      *  查询某个菜单接口
@@ -47,21 +54,29 @@ public class MenuController {
     }
 
     /**
-     *  本周菜单分页接口
+     *  当前菜单分页接口（取最新生成的菜单）
      */
-    @GetMapping("/pageThisWeek")
-    public R<Page<Menu>> getWeekMenu(int page, int limit,
-                                     @RequestParam(required = false) String name){
+    @GetMapping("/pageCurrent")
+    public R<Page<Menu>> getCurrentMenu(int page, int limit,
+                                        @RequestParam(required = false) String name){
         Page<Menu> pageInfo = new Page<>(page, limit);
-
+        History latest = historyService.getOne(new LambdaQueryWrapper<History>()
+                .orderByDesc(History::getHisId)
+                .last("limit 1"));
+        if (latest == null || StrUtil.isEmpty(latest.getMenuIds())) {
+            pageInfo.setRecords(new ArrayList<>());
+            pageInfo.setTotal(0);
+            return R.success(pageInfo);
+        }
+        List<Long> menuIds = parseMenuIds(latest.getMenuIds());
+        if (menuIds.isEmpty()) {
+            pageInfo.setRecords(new ArrayList<>());
+            pageInfo.setTotal(0);
+            return R.success(pageInfo);
+        }
         LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
-
-        // 获取当前时间的开始与结束
-        Date weekOfBeginTime = MyTimeUtils.getWeekOfBeginTime();
-        Date weekOfEndTime = MyTimeUtils.getWeekOfEndTime();
-
-        queryWrapper.eq(StringUtils.isNotEmpty(name), Menu::getName, name)
-                .between(Menu::getCreateTime, weekOfBeginTime, weekOfEndTime)
+        queryWrapper.in(Menu::getMenuId, menuIds)
+                .eq(StringUtils.isNotEmpty(name), Menu::getName, name)
                 .and(w -> w.eq(Menu::getDeleted, 0).or().isNull(Menu::getDeleted))
                 .orderByDesc(Menu::getCreateTime);
 
@@ -71,74 +86,41 @@ public class MenuController {
     }
 
     /**
-     *  下周菜单分页接口
-     */
-    @GetMapping("/pageNextWeek")
-    public R<Page<Menu>> getNextWeekMenu(int page, int limit,
-                                      @RequestParam(required = false) String name){
-        Page<Menu> pageInfo = new Page<>(page, limit);
-
-        LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
-
-        // 获取下一周开始与结束
-        Date nextWeekOfBeginTime = MyTimeUtils.getNextWeekOfBeginTime();
-        Date nextWeekOfEndTime = MyTimeUtils.getNextWeekOfEndTime();
-
-        queryWrapper.eq(StringUtils.isNotEmpty(name), Menu::getName, name)
-                .between(Menu::getCreateTime, nextWeekOfBeginTime, nextWeekOfEndTime)
-                .and(w -> w.eq(Menu::getDeleted, 0).or().isNull(Menu::getDeleted))
-                .orderByDesc(Menu::getCreateTime);
-
-        menuService.page(pageInfo, queryWrapper);
-
-        return R.success(pageInfo);
-    }
-
-    /**
-     *  添加菜单接口
+     *  生成菜单（从食谱中选取若干菜品）
      */
     @PreAuthorize("hasRole('manager')")
-    @PostMapping("/add/{recipeId}")
-    public R<String> add(@PathVariable Long recipeId,
-                         @RequestParam(defaultValue = "next") String week){
-        Recipe recipe = recipeService.getById(recipeId);
-        String name = recipe.getName();
-
-        Date beginTime;
-        Date endTime;
-        String weekLabel;
-        if ("this".equalsIgnoreCase(week)) {
-            beginTime = MyTimeUtils.getWeekOfBeginTime();
-            endTime = MyTimeUtils.getWeekOfEndTime();
-            weekLabel = "本周";
-        } else {
-            beginTime = MyTimeUtils.getNextWeekOfBeginTime();
-            endTime = MyTimeUtils.getNextWeekOfEndTime();
-            weekLabel = "下周";
+    @PostMapping("/generate")
+    public R<String> generate(@RequestBody List<Long> recipeIds){
+        if (recipeIds == null || recipeIds.isEmpty()) {
+            throw new CustomException("请选择要生成菜单的菜品");
         }
-
-        LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Menu::getName, name).between(Menu::getCreateTime, beginTime, endTime);
-        Menu isExist = menuService.getOne(queryWrapper);
-        boolean res;
-        if (isExist == null){
+        List<Long> uniqueIds = recipeIds.stream().distinct().collect(Collectors.toList());
+        List<Recipe> recipes = recipeService.listByIds(uniqueIds);
+        if (recipes.size() != uniqueIds.size()) {
+            throw new CustomException("存在无效的菜品ID");
+        }
+        Date now = new Date();
+        List<Long> menuIds = new ArrayList<>();
+        for (Recipe recipe : recipes) {
             Menu menu = new Menu();
             menu.setName(recipe.getName());
             menu.setCategory(recipe.getCategory());
             menu.setPicture(recipe.getPicture());
             menu.setUnit(recipe.getUnit());
             menu.setPrice(recipe.getPrice());
-            menu.setCreateTime(beginTime);
+            menu.setCreateTime(now);
             menu.setDeleted(0);
-            res = menuService.save(menu);
-        }else{
-            return R.fail("当前菜品已被添加到" + weekLabel);
+            boolean saved = menuService.save(menu);
+            if (!saved) {
+                return R.fail("生成菜单失败");
+            }
+            menuIds.add(menu.getMenuId());
         }
-        if (res) {
-            return R.success("添加" + weekLabel + "菜单成功");
-        }else{
-            return R.fail("添加" + weekLabel + "菜单失败");
-        }
+        History history = new History();
+        history.setTimeRange(DateUtil.formatDateTime(now));
+        history.setMenuIds(menuIds.stream().map(String::valueOf).collect(Collectors.joining(",")));
+        historyService.save(history);
+        return R.success("菜单生成成功");
     }
 
     /**
@@ -220,40 +202,52 @@ public class MenuController {
      * 复用到下一周菜单接口
      */
     @PreAuthorize("hasRole('manager')")
-    @PostMapping("/multiplex/{menuIds}")
-    public R<String> multiplex(@PathVariable String menuIds) {
-        StringBuilder sb = new StringBuilder();
-        boolean res = true;
-        String[] ids = menuIds.split(",");
+    @PostMapping("/reuse/{hisId}")
+    public R<String> reuse(@PathVariable Long hisId) {
+        History history = historyService.getById(hisId);
+        if (history == null || StrUtil.isEmpty(history.getMenuIds())) {
+            return R.fail("未找到可复用的历史菜单");
+        }
+        List<Long> menuIds = parseMenuIds(history.getMenuIds());
+        if (menuIds.isEmpty()) {
+            return R.fail("历史菜单为空");
+        }
+        List<Menu> oldMenus = menuService.listByIds(menuIds);
+        Date now = new Date();
+        List<Long> newMenuIds = new ArrayList<>();
+        for (Menu oldMenu : oldMenus) {
+            Menu menu = new Menu();
+            menu.setName(oldMenu.getName());
+            menu.setCategory(oldMenu.getCategory());
+            menu.setPicture(oldMenu.getPicture());
+            menu.setUnit(oldMenu.getUnit());
+            menu.setPrice(oldMenu.getPrice());
+            menu.setCreateTime(now);
+            menu.setDeleted(0);
+            boolean saved = menuService.save(menu);
+            if (!saved) {
+                return R.fail("复用菜单失败");
+            }
+            newMenuIds.add(menu.getMenuId());
+        }
+        History newHistory = new History();
+        newHistory.setTimeRange(DateUtil.formatDateTime(now));
+        newHistory.setMenuIds(newMenuIds.stream().map(String::valueOf).collect(Collectors.joining(",")));
+        historyService.save(newHistory);
+        return R.success("复用成功，已生成新菜单");
+    }
 
-        for (String id : ids) {
-            Long menuId = Long.valueOf(id);
-            Menu menu = menuService.getById(menuId);
-
-            if (menu != null) {
-                // 判断是否下一周菜单已经存在该菜品
-                String name = menu.getName();
-                Date nextWeekOfBeginTime = MyTimeUtils.getNextWeekOfBeginTime();
-                Date nextWeekOfEndTime = MyTimeUtils.getNextWeekOfEndTime();
-                LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
-                queryWrapper.eq(Menu::getName, name).between(Menu::getCreateTime, nextWeekOfBeginTime, nextWeekOfEndTime);
-                Menu one = menuService.getOne(queryWrapper);
-
-                // 不存在
-                if (one == null) {
-                    menu.setCreateTime(nextWeekOfBeginTime);
-                    menu.setMenuId(null);
-                    res = res && menuService.save(menu);
-                }else {
-                    res = false;
-                    sb.append(menu.getName()).append("、");
-                }
+    private List<Long> parseMenuIds(String menuIds) {
+        if (StrUtil.isEmpty(menuIds)) {
+            return new ArrayList<>();
+        }
+        String[] parts = menuIds.split(",");
+        List<Long> ids = new ArrayList<>();
+        for (String part : parts) {
+            if (StrUtil.isNotEmpty(part)) {
+                ids.add(Long.valueOf(part.trim()));
             }
         }
-        if (res) {
-            return R.success("批量复用成功");
-        }else {
-            return R.fail("批量复用失败，[" + sb.substring(0,sb.length()-1) + "]已存在，无法复用，其余复用成功");
-        }
+        return ids;
     }
 }

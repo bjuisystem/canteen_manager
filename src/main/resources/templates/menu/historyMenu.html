@@ -13,12 +13,14 @@
 
 <script type="text/html" id="historyBar">
     <a class="layui-btn layui-btn-xs" lay-event="detail">查看详情</a>
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="reuse">复用</a>
 </script>
 
 <script src="/component/layui/layui.js"></script>
 <script>
-    layui.use(['table'], function () {
+    layui.use(['table', 'layer'], function () {
         var table = layui.table;
+        var layer = layui.layer;
         table.render({
             elem: '#historyTable',
             url: '/history/page',
@@ -35,9 +37,9 @@
             cols: [
                 [
                 {field: 'hisId', title: 'ID', width: 80},
-                {field: 'timeRange', title: '时间范围'},
-                {field: 'menuIds', title: '菜单ID集合'},
-                {title: '操作', toolbar: '#historyBar', width: 100}
+                {field: 'timeRange', title: '生成时间'},
+                {field: 'menuIds', title: '菜单ID集合', hide: true},
+                {title: '操作', toolbar: '#historyBar', width: 140}
             ]
             ]
         });
@@ -45,6 +47,20 @@
         table.on('tool(historyTable)', function (obj) {
             if (obj.event === 'detail') {
                 window.location.href = '/back/toHistoryDetail/' + obj.data.menuIds;
+            } else if (obj.event === 'reuse') {
+                layui.$.ajax({
+                    url: '/menu/reuse/' + obj.data.hisId,
+                    type: 'POST',
+                    success: function (res) {
+                        if (res.code === 200) {
+                            layer.msg(res.data || '复用成功', {time: 1200}, function () {
+                                window.location.href = '/back/toMenu';
+                            });
+                        } else {
+                            layer.msg(res.msg || '复用失败');
+                        }
+                    }
+                });
             }
         });
     });

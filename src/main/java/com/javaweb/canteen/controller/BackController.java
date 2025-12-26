@@ -150,15 +150,6 @@ public class BackController {
     }
 
     /**
-     * 跳转下周菜单页面
-     */
-    @PreAuthorize("hasRole('manager')")
-    @GetMapping("/back/toNextMenu")
-    public String toNextMenu(){
-        return "menu/nextMenu";
-    }
-
-    /**
      * 跳转历史菜单页面
      */
     @PreAuthorize("hasRole('manager')")
@@ -241,5 +232,4 @@ public class BackController {
         return "system/timeConfig"; // 对应新增的时间配置页面
     }
 }
-
 

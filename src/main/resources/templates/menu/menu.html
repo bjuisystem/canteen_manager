@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>本周菜单</title>
+    <title>当前菜单</title>
     <link rel="stylesheet" href="/component/layui/css/layui.css">
 </head>
 <body class="layui-padding-16">
@@ -19,11 +19,16 @@
         </div>
         <button class="layui-btn" id="searchBtn">查询</button>
         <a class="layui-btn layui-btn-normal" href="/back/toAddMenu">新增菜单</a>
-        <button class="layui-btn layui-btn-normal" id="multiplexBtn">复用到下周</button>
     </div>
 </div>
 
 <table id="menuTable" lay-filter="menuTable"></table>
+
+<script type="text/html" id="menuPic">
+    {{# if(d.picture){ }}
+    <img src="/picture/{{d.picture}}" style="width:60px;height:40px;object-fit:cover;">
+    {{# } }}
+</script>
 
 <script type="text/html" id="menuBar">
     <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
@@ -38,7 +43,7 @@
 
         table.render({
             elem: '#menuTable',
-            url: '/menu/pageThisWeek',
+            url: '/menu/pageCurrent',
             method: 'get',
             page: true,
             parseData: function (res) {
@@ -51,8 +56,8 @@
             },
             cols: [
                 [
-                {type: 'checkbox'},
                 {field: 'menuId', title: 'ID', width: 80},
+                {field: 'picture', title: '图片', templet: '#menuPic', width: 90},
                 {field: 'name', title: '菜名'},
                 {field: 'category', title: '分类'},
                 {field: 'unit', title: '单位'},
@@ -89,26 +94,6 @@
             table.reload('menuTable', {
                 where: { name: layui.$('#searchName').val() },
                 page: { curr: 1 }
-            });
-        });
-
-        layui.$('#multiplexBtn').on('click', function () {
-            var checkStatus = table.checkStatus('menuTable');
-            if (checkStatus.data.length === 0) {
-                layer.msg('请选择要复用的菜单');
-                return;
-            }
-            var ids = checkStatus.data.map(function (row) { return row.menuId; }).join(',');
-            layui.$.ajax({
-                url: '/menu/multiplex/' + ids,
-                type: 'POST',
-                success: function (res) {
-                    if (res.code === 200) {
-                        layer.msg(res.data || '复用成功');
-                    } else {
-                        layer.msg(res.msg || '复用失败');
-                    }
-                }
             });
         });
     });
