@@ -11,10 +11,10 @@ spring:
       max-file-size: 50MB
       max-request-size: 50MB
   datasource:
-    url: jdbc:mysql://localhost:3306/canteen_management?allowPublicKeyRetrieval=true&characterEncoding=UTF-8
+    url: jdbc:mysql://117.72.180.211:3306/canteen_management?allowPublicKeyRetrieval=true&characterEncoding=UTF-8
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    password: 123456
+    password: 19961022Hcl.
   thymeleaf:
     cache: false  #开发阶段设置为 false ，上线后设置为 true
     prefix: classpath:/templates/   # 设置模版文件的路径，前缀

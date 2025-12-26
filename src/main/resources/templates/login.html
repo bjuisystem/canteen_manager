@@ -39,17 +39,36 @@
         <label>密码</label>
         <input type="password" class="form-control" id="password" placeholder="请输入密码">
     </div>
+
+    <div class="form-group">
+        <label>验证码</label>
+        <div class="captcha-row">
+            <input type="text" class="form-control" id="captcha" placeholder="请填写验证码">
+            <img id="captchaImg" src="/common/getCode" alt="captcha">
+        </div>
+    </div>
+
     <button class="btn btn-primary" id="loginBtn">登录</button>
 </div>
 
 <script src="/frontStatic/js/jquery-1.11.2.min.js"></script>
 <script src="/frontStatic/js/sweetalert.min.js"></script>
 <script>
+    function refreshCaptcha() {
+        $("#captchaImg").attr("src", "/common/getCode?ts=" + Date.now());
+    }
+
     function doLogin() {
         var data = {
             username: $("#username").val(),
-            password: $("#password").val()
+            password: $("#password").val(),
+            captcha: $("#captcha").val()
         };
+        if (!data.captcha) {
+            swal("Please enter captcha");
+            refreshCaptcha();
+            return;
+        }
         $.ajax({
             url: "/login/userLogin",
             type: "POST",
@@ -74,6 +93,7 @@
     }
 
     $("#loginBtn").on("click", doLogin);
+    $("#captchaImg").on("click", refreshCaptcha);
     $(document).on("keydown", function (e) {
         if (e.keyCode === 13) {
             doLogin();

@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.annotation.Resource;
 
@@ -128,7 +129,10 @@ public class SecurityConfig {
                 // 取消跨站请求伪造防护
                 .csrf().disable();
 
-        // 暂时取消图形验证码
+
+        // Enable image captcha filter before authentication
+        http.addFilterBefore(verifyCodeFilter, UsernamePasswordAuthenticationFilter.class);
+
 
         // 设置为frame页面的地址只能为同源域名下的页面
         http.headers().frameOptions().sameOrigin();
